@@ -3,3 +3,10 @@ variable "aws_region" {
   type        = string
   default     = "eu-north-1"
 }
+
+variable "instance_type" {
+  description = "EC2 instance type. Sentinel restricts this to an approved list."
+  type        = string
+  default     = "t3.micro"
+}
+
