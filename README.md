@@ -18,3 +18,4 @@ IMDSv1 is more exposed to server side request forgery.
 
 IMDSv2 makes the instance’s internal info service require a token before it answers, which stops an attacker who can only send simple requests from stealing the server’s credentials.
 
+Chose hard mandatory on the first policy as it has no override option for our complaince tests.  Advisory only logs a warning, and soft allows for override.  
