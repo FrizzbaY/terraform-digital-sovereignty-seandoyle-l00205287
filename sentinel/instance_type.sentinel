@@ -1,0 +1,22 @@
+# Load the plan data that HCP Terraform supplies, under the name tfplan.
+import "tfplan/v2" as tfplan
+
+allowed_instance_types = ["t3.micro"]
+# "address" is the resource's name in the plan, "resource_change" is the details of that one planned change.
+ec2_instances = filter tfplan.resource_changes as address, resource_change {
+	# The resource must be an EC2 instance.
+	resource_change.type is "aws_instance" and
+	# It must be a managed resource, not a data source.
+	resource_change.mode is "managed" and
+	# It must be created or updated, because deleted instances have no "after" values to check.
+	(resource_change.change.actions contains "create" or resource_change.change.actions contains "update")
+}
+
+# The rule HCP evaluates. The policy passes only if it is true.
+main = rule {
+	# Every instance in the filtered collection must have an approved instance type.
+	all ec2_instances as address, resource_change {
+		# The instance type planned for this resource must be in the approved list.
+		resource_change.change.after.instance_type in allowed_instance_types
+	}
+}
