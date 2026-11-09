@@ -1,0 +1,18 @@
+# Load the plan data that HCP Terraform supplies, under the name tfplan.
+import "tfplan/v2" as tfplan
+
+# Approved regions
+allowed_regions = ["eu-west-1", "eu-north-1"]
+
+# Managed resources that are created or updated in this plan.
+managed_resources = filter tfplan.resource_changes as address, resource_change {
+	resource_change.mode is "managed" and
+	(resource_change.change.actions contains "create" or resource_change.change.actions contains "update")
+}
+
+# Passes only if every planned resource is in an approved region.
+main = rule {
+	all managed_resources as address, resource_change {
+		resource_change.change.after.region in allowed_regions
+	}
+}
