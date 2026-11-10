@@ -1,12 +1,5 @@
 # Technical Report - Terraform Digital Sovereignty Assignment
 
-###Things I could have done better:
-
-I merged the policies into one sentinel file to test all of them at the same time which was actually unnecessary in hindsight. I misunderstood that free tier Terraform policy limitations and following the instructions of AI might have been to my detriment a little bit here.  
-
-I was having trouble linking my github repository sentinel folder, which was actually a free tier limitation, but not to the extent I thought. I couldn't make a policy set without a policy, and I couldn't search my GitHub repository through the Terraform website app, so I had to a individually managed policy, which allowed me to make a policy set.  Pretty standard.  However, I assumed/misread/misundertood the policy limitatations.  I could have one policy set, not just one policy.  I thought I was limited to a single policy in a single set and thus merged the policies into a single script for testing purposes, while also acknowledging this is not best practice.  We live and we learn.  
-
-### 
 
 ## Limitations
 
@@ -19,7 +12,7 @@ I was having trouble linking my github repository sentinel folder, which was act
 - Sentinel cannot verify provider integrity. The hashes in `.terraform.lock.hcl` do that during `terraform init`. Sentinel runs after plan, and init runs before the plan, so malicious code from a compromised provider has a window in which it can run.
 
 
-- `Terraform's lock file `terraform.lock.hcl` pins what was accepted on the first install and will throw errors when the hash changes, however, it cannot tell you whether the provider was ever trustworthy in the first place.   
+- Terraform's lock file `terraform.lock.hcl` pins what was accepted on the first install and will throw errors when the hash changes, however, it cannot tell you whether the provider was ever trustworthy in the first place.   
 
 ## What I learned and what I would do differently
 - I merged the policies into one script because I believed the free plan allowed only one policy. HashiCorp documentation says the Free edition includes one policy set of up to five policies, so separate policies in one set were probably possible. I should have checked the documentation before building the workaround.
@@ -29,4 +22,15 @@ I was having trouble linking my github repository sentinel folder, which was act
 
 - The AWS free plan region could not be changed, so I could not test from the Irish region.  
 
- 
+
+- I would write Sentinel test mocks from the start, so each policy has a pass case and a fail case that can be run locally. I completely forgot about the test mocks until I was going through the checklist for this assignment and I really wish I had started with them. It would have been much easier for me to comprehend the concepts being introduced from a local setup and I would of progressed muchc more quickly, both in terms of the assignment and my understanding of the concepts.  
+
+## Recommendations
+
+ - Keeping the policies in GitHub for every change made through a pull request has to be the standard practice or else you risk fighting an uphill battle when it comes to versioning and technical drift.   I would run the `sentinel test` against the mocks on each pull request to make sure that the policy is always matching the resources. 
+
+
+- Add a second control outside Terraform for changes made in the AWS console, covering what sentinel cannot.  
+
+
+- Don't solely rely on Sentinel.  Sentinel checks the plans before apply, the lock file and pull request review can cover provider integrity, but they can only do so much.  They have gaps that need to be filled with control outside of Terraform. Sentinel doesn't see changes made to the AWS console, so we can block actions outside approved regions with AWS Organizations service control policy (SCP). Scheduled `terraform plan` can detect drift which is the difference between the real environment and the code.` Provider code will run before Sentinel can stop it, so we introduce minimum permission and short-lived AWS credentials. 
