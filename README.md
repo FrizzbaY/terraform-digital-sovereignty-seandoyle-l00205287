@@ -34,10 +34,10 @@ I can still test the plan against the pasted Sentinel policies though.
 
 I had to create an individually managed policy and add that policy to a policy set.  Now it should work.  
 
-I combined my seperate policies into a single script to run on the free tier plan for Terraform.  There is a single block for which to paste code, so
+I combined my separate policies into a single script to run on the free tier plan for Terraform.  There is a single block for which to paste code, so
 if I want to run multiple policy compliance checks on the Terraform website app, it has to be done this way.   
 
-Created a combined Sentinel 
+The network policy (ssh_ok) fails any plan with an inbound rule open to 0.0.0.0/0 or ::/0, so SSH cannot be exposed to the whole internet, and I tested the failing case with a workspace variable instead of changing the code.
 
 
 ### Test Results located in Documentation/Evidence. 
