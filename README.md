@@ -1,10 +1,11 @@
 # Terraform Digital Sovereignty Assignment - Sean Doyle(L00205287)
 Policy-as-Code solution using Terraform and HashiCorp Sentinel to enforce digital sovereignty and IaC supply chain security.
 
-### Test Results/Screenshots are located in `documentation/evidence`. 
- 
-### tfplan.txt output located in `/terraform` and `/documentation/evidence/tfplan.txt.`
-### tfplan located at `/terraform/tfplan`.
+### Test Results and Screenshots are located in `documentation/evidence/`. 
+### sentinel-mock-tests.txt and Screenshot in `documentation/evidence/`. 
+### tfplan.txt output located in `/terraform/` and `/documentation/evidence/`
+### tfplan located at `/terraform/`.
+
 
 ## Digital Sovereignty
 
@@ -36,7 +37,7 @@ Difference instances could have different security considerations, for example: 
 
 The three policies I chose not to implement were:
 
-Encryption, IMDSv2 and supply chain.
+#### Encryption, IMDSv2, and Supply Chain.
 
 ### Encrypted EBS 
 Elastic Block Store root_block_device.encrypted is true in the plan	Hardcoded as true in main.tf, so it won't fail without a change to the code. The encryption uses an AWS-managed key, so AWS still holds the key material, which is a jurisdictional limit.
@@ -59,7 +60,7 @@ Supply chain integrity is about ensuring that every step taken in a produces man
 Created an IAM user AWS with no AWS Management Console Access permissions granted as this user was used for Terraform. The credentials are a requirement for running the plan.
 They were not used to launch any instances.
 
-sentinel test with per-policy folders is the standard way to test Sentinel policies locally, but we used Terraform runs in HCP instead, because the HCP Terraform free plan only allowed to paste code and use a single policy through the web interface and test them against runs there.
+sentinel test with per-policy folders is the standard way to test Sentinel policies locally, but I used Terraform runs in HCP intially. The HCP Terraform free plan only allowed to paste code and use a single policy through the web interface and test them against runs there.
 
 I have to paste the Sentinel policy code as individually managed policies as I cannot use policy sets on the free tier which would link directly to GitHub.
 I can still test the plan against the pasted Sentinel policies though.
@@ -67,6 +68,19 @@ I can still test the plan against the pasted Sentinel policies though.
 I had to create an individually managed policy and add that policy to a policy set. 
 
 I combined my separate policies into a single script to run on the free tier plan for Terraform.  There is a single block for which to paste code, so if I want to run multiple policy compliance checks on the Terraform website app, it has to be done this way.  I have included `merged-policies-for-terraform.sentinel` file in the sentinel folder. This is a workaround for a limitation and not the preferred method.  
+
+
+## Maintaining Policies as cloud environments evolve
+
+Environments can evolve quite rapidly and dynamically, and the policies are static artifacts trying to control this technically drifting and dynamic system, which inevitably leads to challenges.  New resources get added, new API versions come around, and policies need to match these changes in scope.  To counter the endless challenges of maintaining cloud environments, you have to have stringent policy-as-code that is continuously evaluated, versioned, and enforced.  
+
+## Sentinel mock testing
+
+Each policy has mock plan data in sentinel/test/<policy>/, with a passing and a failing case.
+Run with `sentinel test` from the sentinel/ folder (Sentinel v0.41.0).
+The failing mocks use the same values as the live HCP runs: instance type m5.large,
+region us-east-1, and SSH source 0.0.0.0/0. Output is saved in
+documentation/evidence/sentinel-mock-tests.txt.
 
 
 ### Prompts for Terraform Sentinel Assignment. 
