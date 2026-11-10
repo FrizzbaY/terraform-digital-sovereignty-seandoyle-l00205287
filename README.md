@@ -10,22 +10,22 @@ Policy-as-Code solution using Terraform and HashiCorp Sentinel to enforce digita
 
 AWS free plan region defaults to "eu-north-1" and cannot be changed. I allowed eu-west-1 as well because it is the Irish region.
 
-A region restriction does not give full Digital Sovereignty. AWS is a US-headquartered company, so data in an EU region can still be subject to US legal requests. AWS also holds the encryption key for the disk. This policy does not cover backups, replication or administrative access by AWS.
+A region restriction does not give full Digital Sovereignty. AWS is a US-headquartered company, so data in an EU region can still be subject to US legal requests. AWS also holds the encryption key for the disk. This policy does not cover backups, replication or administrative access by AWS.  
 
 
 ## Policies implemented
 
-All of our policies are hard mandatory in `sentinel/sentinel.hcl` which gives no override option for our complaince tests. On a failed check, the run is stopped before the apply and no resource will be created. These policies only check the plan, so they do not see changes made outside Terraform, such as in the AWS console.
+All of our policies are hard mandatory in `sentinel/sentinel.hcl` which gives no override option for our complaince tests. On a failed check, the run is stopped before the apply and no resource will be created. These policies only check the plan, so they do not see changes made outside Terraform, such as in the AWS console. Sentinel is great for enforcing configuration standards and preventing misconfiguration, but it does not act as security against supply chain attacks.  Measures should be taken prior to execution, such as using isolated environments with only the strictly necessary credentials.  
 
 ### Region
 
 The sovereignty policy fails the plan if any resource being created or updated is outside eu-north-1. This is the Digital Sovereignty policy that makes sure that infrastructure is kept in the approved regions. I tested the failing case by setting the aws_region workspace variable to us-east-1, and the compliant set used eu-north-1. Given the aws free tier limitations, I could not test from the closest region.  
 
-Policy-as-Code is effective at enforcing a rule consistently, but the region rule is only a baseline. It controls where infrastructure is created but not necessarily the access or what laws can reach the data.
+Policy-as-Code is effective at enforcing a rule consistently, but the region rule is only a baseline. It controls where infrastructure is created but not necessarily the access or what laws can reach the data.  
 
 ### Network
 
-The network sentinel policy fails if the plan inbound security group rule is open to 0.0.0.0/0 for IPv4 or ::/0 for IPv6. It is named for SSH but applies to every port to block unrestricted inbound SSH access and is stricter overall. I tested the failing case by changing a workspace variable instead of the code.
+The network sentinel policy fails if the plan inbound security group rule is open to 0.0.0.0/0 for IPv4 or ::/0 for IPv6. It is named for SSH but applies to every port to block unrestricted inbound SSH access and is stricter overall. I tested the failing case by changing a workspace variable instead of the code.  
 
 ### Instance Type
 The policy allowed for t3.micro and only t3.micro as the approved instance type and would fail if the plan did not meet the criteria.  An instance type policy is a safety net against automated systems or developers, accidentally or intentionally, launching an improper instance type, such as an under-optimized, insecure, or oversized instance.  
