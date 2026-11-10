@@ -32,7 +32,24 @@ Have a look at the pre written Sentinel Policies on Terraform app.
 I have to paste the Sentinel policy code as individually managed policies as I cannot use policy sets on the free tier which would link directly to GitHub.  
 I can still test the plan against the pasted Sentinel policies though.  
 
-ed the policy and then I needed to create the set with the policy.  Now it should work.  
+I had to create an individually managed policy and add that policy to a policy set.  Now it should work.  
+
+I combined my seperate policies into a single script to run on the free tier plan for Terraform.  There is a single block for which to paste code, so
+if I want to run multiple policy compliance checks on the Terraform website app, it has to be done this way.   
+
+Created a combined Sentinel 
 
 
 ### Test Results located in Documentation/Evidence. 
+
+The three policies I chose not to implement were: 
+
+Encryption, IMDSv2 and supply chain.
+
+Encrypted EBS (Elastic Block Store, the disk)	root_block_device.encrypted is true in the plan	Hardcoded as true in main.tf, so it 
+could not fail without changing the code. Also, encryption uses an AWS-managed key, so AWS still holds the key material, which you already noted as a jurisdictional limit.
+
+Mandatory IMDSv2 (Instance Metadata Service version 2)	metadata_options.http_tokens is "required"	Hardcoded in main.tf, same reason. Your existing README note on why 
+required matters (server side request forgery) belongs here.
+
+Supply chain integrity	Provider source, provider version, module sources and pinned versions	Plan resource data does not include provider or module sources. required_version and the ~> 6.0 constraint in versions.tf and .terraform.lock.hcl hash checks provide the controls instead. Sentinel alone cannot verify provider integrity or module provenance, which the brief asks you to identify.

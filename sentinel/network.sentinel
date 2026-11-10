@@ -1,0 +1,21 @@
+# Load the plan data that HCP Terraform supplies, under the name tfplan.
+import "tfplan/v2" as tfplan
+
+# Inbound rules that are created or updated in this plan.
+ingress_rules = filter tfplan.resource_changes as address, resource_change {
+	resource_change.type is "aws_vpc_security_group_ingress_rule" and
+	resource_change.mode is "managed" and
+	(resource_change.change.actions contains "create" or resource_change.change.actions contains "update")
+}
+
+# Passes only if no inbound rule allows all IPv4 or all IPv6 addresses.
+ssh_ok = rule {
+	all ingress_rules as address, resource_change {
+		resource_change.change.after.cidr_ipv4 is not "0.0.0.0/0" and
+		resource_change.change.after.cidr_ipv6 is not "::/0"
+	}
+}
+
+main = rule {
+	ssh_ok
+}
