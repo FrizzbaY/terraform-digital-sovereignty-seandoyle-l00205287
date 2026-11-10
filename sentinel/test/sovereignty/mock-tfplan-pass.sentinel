@@ -1,0 +1,17 @@
+resource_changes = {
+	"aws_instance.sovereign_compute": {
+		"address": "aws_instance.sovereign_compute",
+		"mode":    "managed",
+		"type":    "aws_instance",
+		"name":    "sovereign_compute",
+		"change": {
+			"actions": ["create"],
+			"before":  null,
+			"after": {
+				"instance_type": "t3.micro",
+				"region":        "eu-north-1",
+			},
+			"after_unknown": {},
+		},
+	},
+}
