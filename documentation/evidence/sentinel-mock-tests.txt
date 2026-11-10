@@ -1,0 +1,69 @@
+? - merged_policies_for_terraform.sentinel [no test files]
+PASS - sovereignty.sentinel
+  PASS - test\sovereignty\fail.hcl
+
+    trace:
+      sovereignty.sentinel:14:1 - Rule "main"
+        Description:
+          Passes only if every planned resource is in an approved region.
+
+        Value:
+          false
+  PASS - test\sovereignty\pass.hcl
+
+    trace:
+      sovereignty.sentinel:14:1 - Rule "main"
+        Description:
+          Passes only if every planned resource is in an approved region.
+
+        Value:
+          true
+PASS - instance_type.sentinel
+  PASS - test\instance_type\fail.hcl
+
+    trace:
+      instance_type.sentinel:16:1 - Rule "main"
+        Description:
+          The rule HCP evaluates. The policy passes only if it is true.
+
+        Value:
+          false
+  PASS - test\instance_type\pass.hcl
+
+    trace:
+      instance_type.sentinel:16:1 - Rule "main"
+        Description:
+          The rule HCP evaluates. The policy passes only if it is true.
+
+        Value:
+          true
+PASS - network.sentinel
+  PASS - test\network\fail.hcl
+
+    trace:
+      network.sentinel:19:1 - Rule "main"
+        Value:
+          false
+
+      network.sentinel:12:1 - Rule "ssh_ok"
+        Description:
+          Passes only if no inbound rule allows all IPv4 or all IPv6
+          addresses.
+
+        Value:
+          false
+  PASS - test\network\pass.hcl
+
+    trace:
+      network.sentinel:19:1 - Rule "main"
+        Value:
+          true
+
+      network.sentinel:12:1 - Rule "ssh_ok"
+        Description:
+          Passes only if no inbound rule allows all IPv4 or all IPv6
+          addresses.
+
+        Value:
+          true
+4 tests completed in 2.6672ms
