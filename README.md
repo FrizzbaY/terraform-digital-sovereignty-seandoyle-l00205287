@@ -1,10 +1,11 @@
 # Terraform Digital Sovereignty Assignment - Sean Doyle(L00205287)
 Policy-as-Code solution using Terraform and HashiCorp Sentinel to enforce digital sovereignty and IaC supply chain security.
 
-### Test Results/Screenshots are located in `documentation/evidence`. 
- 
-### tfplan.txt output located in `/terraform` and `/documentation/evidence/tfplan.txt.`
-### tfplan located at `/terraform/tfplan`.
+### Test Results and Screenshots are located in `documentation/evidence/`. 
+### sentinel-mock-tests.txt and Screenshot in `documentation/evidence/`. 
+### tfplan.txt output located in `/terraform/` and `/documentation/evidence/`
+### tfplan located at `/terraform/`.
+
 
 ## Digital Sovereignty
 
@@ -67,6 +68,15 @@ I can still test the plan against the pasted Sentinel policies though.
 I had to create an individually managed policy and add that policy to a policy set. 
 
 I combined my separate policies into a single script to run on the free tier plan for Terraform.  There is a single block for which to paste code, so if I want to run multiple policy compliance checks on the Terraform website app, it has to be done this way.  I have included `merged-policies-for-terraform.sentinel` file in the sentinel folder. This is a workaround for a limitation and not the preferred method.  
+
+## Sentinel mock testing
+
+
+Each policy has mock plan data in sentinel/test/<policy>/, with a passing and a failing case.
+Run with `sentinel test` from the sentinel/ folder (Sentinel v0.41.0).
+The failing mocks use the same values as the live HCP runs: instance type m5.large,
+region us-east-1, and SSH source 0.0.0.0/0. Output is saved in
+documentation/evidence/sentinel-mock-tests.txt.
 
 
 ### Prompts for Terraform Sentinel Assignment. 
