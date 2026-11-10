@@ -40,6 +40,10 @@ if I want to run multiple policy compliance checks on the Terraform website app,
 The network policy (ssh_ok) fails any plan with an inbound rule open to 0.0.0.0/0 or ::/0, so SSH cannot be exposed to the whole internet, and I tested the failing case with a workspace variable instead of changing the code.
 
 
+sentinel test with per-policy folders is the standard way to test Sentinel policies locally, but we used Terraform runs instead.
+
+sentinel test with per-policy folders is the standard way to test Sentinel policies locally, but we used Terraform runs in HCP instead, because the HCP Terraform free plan only allowed to paste code and use a single policy through the web interface and test them against runs there.
+
 ### Test Results located in Documentation/Evidence. 
 
 The three policies I chose not to implement were: 
