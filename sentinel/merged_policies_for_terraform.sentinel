@@ -1,0 +1,45 @@
+import "tfplan/v2" as tfplan
+
+allowed_instance_types = ["t3.micro"]
+allowed_regions = ["eu-west-1", "eu-north-1"]
+
+
+ec2_instances = filter tfplan.resource_changes as address, resource_change {
+	resource_change.type is "aws_instance" and
+	resource_change.mode is "managed" and
+	(resource_change.change.actions contains "create" or resource_change.change.actions contains "update")
+}
+
+managed_resources = filter tfplan.resource_changes as address, resource_change {
+	resource_change.mode is "managed" and
+	(resource_change.change.actions contains "create" or resource_change.change.actions contains "update")
+}
+
+ingress_rules = filter tfplan.resource_changes as address, resource_change {
+	resource_change.type is "aws_vpc_security_group_ingress_rule" and
+	resource_change.mode is "managed" and
+	(resource_change.change.actions contains "create" or resource_change.change.actions contains "update")
+}
+
+instance_type_ok = rule {
+	all ec2_instances as address, resource_change {
+		resource_change.change.after.instance_type in allowed_instance_types
+	}
+}
+
+region_ok = rule {
+	all managed_resources as address, resource_change {
+		resource_change.change.after.region in allowed_regions
+	}
+}
+
+ssh_ok = rule {
+	all ingress_rules as address, resource_change {
+		resource_change.change.after.cidr_ipv4 is not "0.0.0.0/0" and
+		resource_change.change.after.cidr_ipv6 is not "::/0"
+	}
+}
+
+main = rule {
+	instance_type_ok and region_ok and ssh_ok
+}
